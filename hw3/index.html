@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>String: youtube</title>
+</head>
+<body>
+    <script>
+        // Оголосіть константу з регулярним виразом для визначення ідентифікатора відео на YouTube
+        const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+
+        // Запитайте у користувача текст із посиланням на YouTube
+        let userInput = prompt('Введіть текст із посиланням на YouTube:');
+
+        // Використовуйте метод match для отримання масиву ідентифікаторів відео
+        let matchResult = userInput.match(youtubeRegex);
+
+        // Перевірка, чи є збіг та чи є ідентифікатор відео в масиві
+        if (matchResult && matchResult[1]) {
+            // Вийміть ідентифікатор відео з масиву
+            let videoId = matchResult[1];
+
+            // Створіть HTML-код для вбудовування відео на сторінку YouTube
+            let embedCode = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+
+            // Використовуючи document.write, виведіть отриманий рядок на сторінку
+            document.write(embedCode);
+        } else {
+        document.write("Введений текст не містить посилання на YouTube відео.");
+        }
+    </script>
+</body>
+</html>
