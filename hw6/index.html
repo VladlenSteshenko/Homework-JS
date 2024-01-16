@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objects</title>
+</head>
+<body>
+    <script>
+       
+        // 13 Currency real rate
+        {
+            // Отримання курсів валют
+            fetch('https://open.er-api.com/v6/latest/USD')
+                .then(res => res.json())
+                .then(data => {
+                    // Функція, яка отримує дані про курси валют та обробляє їх
+                    function convertCurrency() {
+                        // Запитання користувачеві про вхідні дані
+                        const inputCurrency = prompt('Введіть вхідну валюту (наприклад, USD):');
+                        const targetCurrency = prompt('Введіть валюту конвертації (наприклад, EUR):');
+                        const amount = parseFloat(prompt('Введіть суму у вхідній валюті:'));
+
+                        // Перевірка наявності введених валют в об'єкті data
+                        if (data.rates[inputCurrency] && data.rates[targetCurrency]) {
+                            // Конвертація валют та виведення результату
+                            const convertedAmount = (amount / data.rates[inputCurrency]) * data.rates[targetCurrency];
+                            alert(`Результат конвертації: ${amount} ${inputCurrency} = ${convertedAmount.toFixed(2)} ${targetCurrency}`);
+                        } else {
+                            alert('Неправильна валюта. Перевірте введені дані.');
+                        }
+                    }
+
+                    // Виклик функції для конвертації валют після отримання даних
+                    convertCurrency();
+                })
+        }
+
+        
+        // 14 Currency drop down
+        {
+            // Отримання курсів валют
+            fetch('https://open.er-api.com/v6/latest/USD')
+                .then(res => res.json())
+                .then(data => {
+                    // Функція для створення списку, що випадає, з назвами валют
+                    function createCurrencyDropdown() {
+                        // Створення рядкової змінної для накопичення HTML-тегів
+                        let dropdownHTML = '<select id="currencyDropdown">';
+
+                        // Додавання опцій для кожної валюти
+                        for (const currency in data.rates) {
+                            dropdownHTML += `<option value="${currency}">${currency}</option>`;
+                        }
+
+                        // Закриваємо тег <select>
+                        dropdownHTML += '</select>';
+
+                        // Вивід HTML-коду списку у консоль (можна вставити у власну сторінку)
+                        document.write(dropdownHTML);
+                    }
+
+                    // Виклик функції для створення списку після отримання даних
+                    createCurrencyDropdown();
+                })
+        }
+
+
+        // 15 Currency table
+        {
+            fetch('https://open.er-api.com/v6/latest/USD')
+                .then(res => res.json())
+                .then(data => {
+                    const currencies = Object.keys(data.rates);
+                    
+                    // Створення заголовку таблиці
+                    let tableHTML = '<table border="1"><tr><th>Currency</th>';
+
+                    for (const currency of currencies) {
+                        tableHTML += `<th>${currency}</th>`;
+                    }
+
+                    tableHTML += '</tr>';
+
+                    // Створення тіла таблиці
+                    for (const sourceCurrency of currencies) {
+                        tableHTML += `<tr><td>${sourceCurrency}</td>`;
+
+                        for (const targetCurrency of currencies) {
+                            if (sourceCurrency === targetCurrency) {
+                                tableHTML += '<td>1.00</td>';
+                            } else {
+                                const crossRate = 1 / data.rates[sourceCurrency] * data.rates[targetCurrency];
+                                tableHTML += `<td>${crossRate.toFixed(2)}</td>`;
+                            }
+                        }
+
+                        tableHTML += '</tr>';
+                    }
+
+                    tableHTML += '</table>';
+
+                    // Вивід HTML-коду таблиці у консоль (можна вставити у власну сторінку)
+                    document.write(tableHTML);
+                })
+        }
+        
+
+        // 16 Form
+        {
+            const car = {
+                "Name": "chevrolet chevelle malibu",
+                "Cylinders": 8,
+                "Displacement": 307,
+                "Horsepower": 130,
+                "Weight_in_lbs": 3504,
+                "Origin": "USA",
+                "in_production": false
+            };
+
+            // Функція для отримання відповідного типу HTML input
+            function getInputType(value) {
+                return typeof value === 'number' ? 'number' : typeof value === 'boolean' ? 'checkbox' : 'text';
+            }
+
+            // Створення форми HTML
+            function createForm(obj) {
+                const form = document.createElement('form');
+
+                for (const key in obj) {
+                    const label = document.createElement('label');
+                    label.textContent = `${key}: `;
+
+                    const input = document.createElement('input');
+                    input.type = getInputType(obj[key]);
+                    input.name = key;
+
+                    if (input.type === 'checkbox') {
+                        input.checked = obj[key];
+                    } else {
+                        input.value = obj[key];
+                    }
+
+                    label.appendChild(input);
+                    form.appendChild(label);
+                }
+
+                return form;
+            }
+
+            // Додавання форми до body
+            document.body.appendChild(createForm(car));
+
+        }
+
+
+        // 17 Table
+        {
+            const persons = [
+                {
+                    "Name":"chevrolet chevelle malibu",
+                    "Cylinders":8,
+                    "Displacement":307,
+                    "Horsepower":130,
+                    "Weight_in_lbs":3504,
+                    "Origin":"USA"
+                },
+                {
+                    "Name":"buick skylark 320",
+                    "Miles_per_Gallon":15,
+                    "Cylinders":8,
+                    "Displacement":350,
+                    "Horsepower":165,
+                    "Weight_in_lbs":3693,
+                    "Acceleration":11.5,
+                    "Year":"1970-01-01",
+                },
+                {
+                    "Miles_per_Gallon":18,
+                    "Cylinders":8,
+                    "Displacement":318,
+                    "Horsepower":150,
+                    "Weight_in_lbs":3436,
+                    "Year":"1970-01-01",
+                    "Origin":"USA"
+                },
+                {
+                    "Name":"amc rebel sst",
+                    "Miles_per_Gallon":16,
+                    "Cylinders":8,
+                    "Displacement":304,
+                    "Horsepower":150,
+                    "Year":"1970-01-01",
+                    "Origin":"USA"
+                },
+            ]
+
+            // Перший прохід - пошук колонок
+            const columns = [];
+            persons.forEach(person => {
+                for (const key in person) {
+                    if (!columns.includes(key)) {
+                        columns.push(key);
+                    }
+                }
+            });
+
+            // Заголовок таблиці
+            let tableHTML = '<table border="1"><tr>';
+            columns.forEach(column => {
+                tableHTML += `<th>${column}</th>`;
+            });
+            tableHTML += '</tr>';
+
+            // Другий прохід - відображення таблиці
+            persons.forEach(person => {
+                tableHTML += '<tr>';
+                columns.forEach(column => {
+                    tableHTML += `<td>${person[column] !== undefined ? person[column] : ''}</td>`;
+                });
+                tableHTML += '</tr>';
+            });
+
+            tableHTML += '</table>';
+
+            // Додавання таблиці до body
+            document.body.innerHTML += tableHTML;
+        }
+
+    </script>
+</body>
+</html>
