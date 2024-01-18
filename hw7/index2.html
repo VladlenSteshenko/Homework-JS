@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>16 Calc Live</title>
+</head>
+<body>
+    <h1>Electricity Cost Calculator</h1>
+    
+    <label for="spowerConsumed1">Power Consumed 1 (kWh):</label>
+    <input type="number" id="spowerConsumed1">
+    </br>
+    <label for="tariffPerKWh1">Tariff for 1 kWh (грн/kWh):</label>
+    <input type="number" id="tariffPerKWh1">
+    </br>
+    <label for="spowerConsumed2">Power Consumed 2 (kWh):</label>
+    <input type="number" id="spowerConsumed2">
+    </br>
+    <label for="tariffPerKWh2">Tariff for 2 kWh (грн/kWh):</label>
+    <input type="number" id="tariffPerKWh2">
+    </br>
+    <button onclick="calculateAndDisplay()">Calculate</button>
+    </br>
+    <div id="result1"></div>
+    <div id="result2"></div>
+
+    <script>
+        function calculateAndDisplay() {
+            let spowerConsumed1 = parseFloat(document.getElementById("spowerConsumed1").value);
+            let tariffPerKWh1 = parseFloat(document.getElementById("tariffPerKWh1").value);
+            let spowerConsumed2 = parseFloat(document.getElementById("spowerConsumed2").value);
+            let tariffPerKWh2 = parseFloat(document.getElementById("tariffPerKWh2").value);
+
+            let result = calculateElectricityCost(spowerConsumed1, tariffPerKWh1, spowerConsumed2, tariffPerKWh2);
+
+            document.getElementById("result1").innerText = 
+            `Solution 1:
+            Power Consumed: ${result.solution1.spowerConsumed} kWh
+            Tariff: ${result.solution1.tariffPerKWh} грн/kWh
+            Total Cost: грн${result.solution1.totalCost} \n\n`;
+
+            document.getElementById("result2").innerText = 
+            `Solution 2:
+            Power Consumed: ${result.solution2.spowerConsumed} kWh
+            Tariff: ${result.solution2.tariffPerKWh} грн/kWh
+            Total Cost: грн${result.solution2.totalCost} \n\n`;
+        }
+
+        function calculateElectricityCost(spowerConsumed1, tariffPerKWh1, spowerConsumed2, tariffPerKWh2) {
+            let totalCost1 = spowerConsumed1 * tariffPerKWh1;
+            let totalCost2 = spowerConsumed2 * tariffPerKWh2;
+
+            return {
+                solution1: {
+                    spowerConsumed: spowerConsumed1,
+                    tariffPerKWh: tariffPerKWh1,
+                    totalCost: totalCost1.toFixed(2),
+                },
+                solution2: {
+                    spowerConsumed: spowerConsumed2,
+                    tariffPerKWh: tariffPerKWh2,
+                    totalCost: totalCost2.toFixed(2),
+                },
+            };
+        }
+    </script>
+</body>
+</html>
