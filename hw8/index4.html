@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8 countries and cities</title>
+</head>
+<body>
+    <label for="countries">Країна:</label>
+    <select id="countries"></select>
+    
+    <label for="cities">Місто:</label>
+    <select id="cities"></select>
+    
+    <script>
+        // Функція для заповнення країн в select
+        function fillCountries(selectId) {
+            fetch('https://raw.githubusercontent.com/russ666/all-countries-and-cities-json/master/countries.min.json')
+                .then(res => res.json())
+                .then(data => {
+                    const countriesSelect = document.getElementById(selectId);
+    
+                    for (const country in data) {
+                        const option = document.createElement("option");
+                        option.innerText = country;
+                        option.value = country;
+                        countriesSelect.append(option);
+                    }
+                })
+                .catch(error => console.error('Помилка під час отримання даних:', error));
+        }
+    
+        // Функція для заповнення міст в select
+        function fillCities(selectedCountry) {
+            const citiesSelect = document.getElementById("cities");
+            citiesSelect.innerHTML = ""; // Очистити попередні міста
+    
+            fetch('https://raw.githubusercontent.com/russ666/all-countries-and-cities-json/master/countries.min.json')
+                .then(res => res.json())
+                .then(data => {
+                    const cities = data[selectedCountry] || [];
+                    
+                    for (const city of cities) {
+                        const option = document.createElement("option");
+                        option.innerText = city;
+                        option.value = city;
+                        citiesSelect.append(option);
+                    }
+                })
+                .catch(error => console.error('Помилка під час отримання даних:', error));
+        }
+    
+        // Додаємо обробники подій для елементів
+        document.getElementById("countries").onchange = function () {
+            const selectedCountry = document.getElementById("countries").value;
+            fillCities(selectedCountry);
+        };
+    
+        // Ініціалізуємо країни при завантаженні сторінки
+        fillCountries("countries");
+    </script>
+
+</body>
+</html>

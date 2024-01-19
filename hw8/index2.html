@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6 closure calc</title>
+</head>
+<body>
+    <div id="currency-buttons-container"></div>
+
+    <script>
+
+        // 6 closure calc
+        {
+            fetch('https://open.er-api.com/v6/latest/USD')
+            .then(res => res.json())
+            .then(data => {
+                // Перевірка наявності rates у data
+                if (data && data.rates) {
+                    // Отримати контейнер, в який будемо додавати кнопки
+                    const container = document.getElementById('currency-buttons-container');
+
+                    // Перебір курсів
+                    for (const currency in data.rates) {
+                        if (data.rates.hasOwnProperty(currency)) {
+                            // Створити кнопку
+                            const button = document.createElement('button');
+
+                            // Встановити текст кнопки - назва валюти
+                            button.innerText = currency;
+
+                            // Додати обробник події на кнопці
+                            button.onclick = () => {
+                                // Запитати користувача про суму
+                                const amountInput = prompt(`Введіть суму в ${currency}:`);
+
+                                // Перевірка, чи користувач ввів суму
+                                if (amountInput !== null) {
+                                    const amount = parseFloat(amountInput);
+
+                                    // Перевести суму в USD
+                                    const convertedAmount = amount / data.rates[currency];
+
+                                    // Вивести результат
+                                    alert(`${amount} ${currency} = ${convertedAmount.toFixed(2)} USD`);
+                                }
+                            };
+
+                            // Додати кнопку до контейнера
+                            container.appendChild(button);
+                        }
+                    }
+                } else {
+                    console.error('Помилка: Дані про курси валют відсутні або неправильні.');
+                }
+            })
+            .catch(error => console.error('Помилка під час отримання даних:', error));  
+        }
+    </script>
+
+</body>
+</html>
