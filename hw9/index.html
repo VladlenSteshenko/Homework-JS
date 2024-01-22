@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>14 DOM: multiply table</title>
+    <style>
+        table,td {
+            border: 1px solid black;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <script>
+
+        // 14 DOM: multiply table
+        {
+            let rows = 10;
+            let cols = 10;
+
+            let multiplicationTable = [];
+
+            // Заповнення масиву таблиці множення
+            for (let i = 0; i < rows; i++) {
+                multiplicationTable[i] = [];
+
+                for (let j = 0; j < cols; j++) {
+                    multiplicationTable[i][j] = i*j;
+                }
+            }
+
+            // Створення таблиці та заповнення її даними
+            let table = document.createElement("table");
+
+            for (let i = 0; i < rows; i++) {
+                let row = document.createElement("tr");
+
+                for (let j = 0; j < cols; j++) {
+                    let cell = document.createElement("td");
+
+                    if (i === 0 && j === 0) {
+                        cell.innerText = 0;
+                    } else if (i === 0 || j === 0) {
+                        // Нульовий рядок або стовпець - числа від 1 до 9
+                        cell.innerText = i === 0 ? j : i;
+                    } else {
+                        // Звичайні елементи - значення таблиці множення
+                        cell.innerText = multiplicationTable[i][j];
+                    }
+
+                    row.appendChild(cell);
+                }
+
+                table.appendChild(row);
+            }
+
+            document.body.appendChild(table);
+        }
+
+    </script>
+</body>
+</html>

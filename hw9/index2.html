@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>15 DOM: highlight cell</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        .highlight {
+            background-color: magenta;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        let table = document.createElement("table");
+    
+        for (let i = 0; i < 5; i++) {
+            let row = document.createElement("tr");
+    
+            for (let j = 0; j < 5; j++) {
+                let cell = document.createElement("td");
+                cell.innerText = `Row ${i + 1}, Col ${j + 1}`;
+                row.appendChild(cell);
+            }
+    
+            table.appendChild(row);
+        }
+    
+        document.body.appendChild(table);
+    
+        // Додавання обробників подій mouseover та mouseout до комірок таблиці
+        let cells = document.querySelectorAll('td');
+    
+        cells.forEach(function(cell) {
+            cell.addEventListener('mouseover', function() {
+                // Підсвічуємо комірку при наведенні миші
+                this.classList.add('highlight');
+            });
+    
+            cell.addEventListener('mouseout', function() {
+                // Знімаємо підсвічування при виході миші
+                this.classList.remove('highlight');
+            });
+        });
+    </script>
+</body>
+</html>

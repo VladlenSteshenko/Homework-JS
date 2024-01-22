@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>16 DOM: Highlight cross</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        .highlight {
+            background-color: magenta;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        let table = document.createElement("table");
+    
+        for (let i = 0; i < 5; i++) {
+            let row = document.createElement("tr");
+    
+            for (let j = 0; j < 5; j++) {
+                let cell = document.createElement("td");
+                cell.innerText = `Row ${i}, Col ${j}`;
+                row.appendChild(cell);
+            }
+    
+            table.appendChild(row);
+        }
+    
+        document.body.appendChild(table);
+    
+        let cells = document.querySelectorAll('td');
+        let colIndex;  // Declare colIndex outside of the loop
+    
+        cells.forEach(function(cell, index) {
+            cell.addEventListener('mouseover', function() {
+                this.classList.add('highlight');
+    
+                let row = this.parentNode;
+                colIndex = Array.from(row.children).indexOf(this);  // Update colIndex here
+    
+                row.classList.add('highlight');
+    
+                let allRows = document.querySelectorAll('tr');
+                allRows.forEach(function(row) {
+                    row.children[colIndex].classList.add('highlight');
+                });
+            });
+    
+            cell.addEventListener('mouseout', function() {
+                this.classList.remove('highlight');
+    
+                let row = this.parentNode;
+                row.classList.remove('highlight');
+    
+                let allRows = document.querySelectorAll('tr');
+                allRows.forEach(function(row) {
+                    row.children[colIndex].classList.remove('highlight');
+                });
+            });
+        });
+    </script>
+    
+</body>
+</html>
