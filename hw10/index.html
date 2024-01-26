@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PersonForm</title>
+</head>
+<body>
+    <div id="parentElementId"></div>
+
+    <script>
+        function createPersonClosure(initialName, initialSurname) {
+            let name = initialName;
+            let surname = initialSurname;
+            let fatherName;
+            let age;
+
+            function capitalizeString(value) {
+                return value.charAt(0).toUpperCase() + value.slice(1);
+            }
+
+            function isValidName(value) {
+                return typeof value === 'string' && /^[A-Za-z]+$/.test(value);
+            }
+
+            function isValidAge(value) {
+                return typeof value === 'number' && value >= 0 && value <= 100;
+            }
+
+            return {
+                getName: () => name,
+                getSurname: () => surname,
+                getFatherName: () => fatherName,
+                getAge: () => age,
+                getFullName: () => `${surname} ${name} ${fatherName || ''}`.trim(),
+
+                setName: (newName) => {
+                    if (isValidName(newName)) {
+                        name = capitalizeString(newName);
+                    }
+                    return name;
+                },
+
+                setSurname: (newSurname) => {
+                    if (isValidName(newSurname)) {
+                        surname = capitalizeString(newSurname);
+                    }
+                    return surname;
+                },
+
+                setFatherName: (newFatherName) => {
+                    if (isValidName(newFatherName)) {
+                        fatherName = capitalizeString(newFatherName);
+                    }
+                    return fatherName;
+                },
+
+                setAge: (newAge) => {
+                    if (isValidAge(parseInt(newAge))) {
+                        age = parseInt(newAge);
+                    }
+                    return age;
+                },
+
+                setFullName: (newFullName) => {
+                    const parts = newFullName.split(' ');
+                    if (parts.length === 3) {
+                        surname = capitalizeString(parts[0]);
+                        name = capitalizeString(parts[1]);
+                        fatherName = capitalizeString(parts[2]);
+                    }
+                    return `${surname} ${name} ${fatherName || ''}`.trim();
+                },
+            };
+        }
+
+        function personForm(parentElement, person) {
+
+            createInputField('Name', person.getName(), person.setName);
+            createInputField('Surname', person.getSurname(), person.setSurname);
+            createInputField('FatherName', person.getFatherName(), person.setFatherName);
+            createInputField('Age', person.getAge(), person.setAge);
+            createInputField('FullName', person.getFullName(), person.setFullName);
+
+            function createInputField(label, value, setter) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = label;
+                input.value = value;
+
+                const submitButton = document.createElement('button');
+                submitButton.textContent = 'Submit';
+
+                submitButton.onclick = function () {
+                    input.value = setter(input.value);
+                };
+
+                parentElement.appendChild(input);
+                parentElement.appendChild(submitButton);
+            }
+        }
+        
+        const person = createPersonClosure('John', 'Doe');
+        console.log(person.getFullName() + " |age:" + person.getAge());
+        const parentElement = document.getElementById('parentElementId');
+        personForm(parentElement, person);
+        console.log(person.getFullName() + " |age:" + person.getAge());
+    </script>
+
+</body>
+</html>

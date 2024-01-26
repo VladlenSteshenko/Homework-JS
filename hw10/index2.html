@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>getSetForm</title>
+</head>
+<body>
+    <script>
+        function createPersonClosure(initialName, initialSurname) {
+            let name = initialName;
+            let surname = initialSurname;
+            let fatherName;
+            let age;
+
+            function capitalizeString(value) {
+                return value.charAt(0).toUpperCase() + value.slice(1);
+            }
+
+            function isValidName(value) {
+                return typeof value === 'string' && /^[A-Za-z]+$/.test(value);
+            }
+
+            function isValidAge(value) {
+                return typeof value === 'number' && value >= 0 && value <= 100;
+            }
+
+            return {
+                getName: () => name,
+                getSurname: () => surname,
+                getFatherName: () => fatherName,
+                getAge: () => age,
+                getFullName: () => `${surname} ${name} ${fatherName || ''}`.trim(),
+
+                setName: (newName) => {
+                    if (isValidName(newName)) {
+                        name = capitalizeString(newName);
+                    }
+                    return name;
+                },
+
+                setSurname: (newSurname) => {
+                    if (isValidName(newSurname)) {
+                        surname = capitalizeString(newSurname);
+                    }
+                    return surname;
+                },
+
+                setFatherName: (newFatherName) => {
+                    if (isValidName(newFatherName)) {
+                        fatherName = capitalizeString(newFatherName);
+                    }
+                    return fatherName;
+                },
+
+                setAge: (newAge) => {
+                    if (isValidAge(parseInt(newAge))) {
+                        age = parseInt(newAge);
+                    }
+                    return age;
+                },
+
+                setFullName: (newFullName) => {
+                    const parts = newFullName.split(' ');
+                    if (parts.length === 3) {
+                        surname = capitalizeString(parts[0]);
+                        name = capitalizeString(parts[1]);
+                        fatherName = capitalizeString(parts[2]);
+                    }
+                    return `${surname} ${name} ${fatherName || ''}`.trim();
+                },
+            };
+        }
+
+        function getSetForm(parent, getSet) {
+            const inputs = {};
+
+            // Create input field for all properties
+            const form = document.createElement('form');
+            form.setAttribute('id', 'dynamicForm');
+
+            const updateInputs = () => {
+                for (const prop in inputs) {
+                    const getter = getSet[`get${prop}`];
+                    inputs[prop].value = getter();
+                }
+            };
+
+            for (const getSetName in getSet) {
+                const getOrSet = getSetName.substring(0, 3);
+                const fieldName = getSetName.substring(3);
+
+                const setKey = `set${fieldName}`;
+                const getKey = `get${fieldName}`;
+
+                // Create input element only if it doesn't exist in the registry
+                if (!inputs[fieldName]) {
+                    const input = document.createElement('input');
+                    input.setAttribute('type', 'text');
+                    input.setAttribute('placeholder', fieldName);
+                    input.value = getSet[getKey]();
+
+                    if (getOrSet === 'set') {
+                        input.disabled = true;
+                    }
+
+                    input.oninput = function () {
+                        const setter = getSet[setKey];
+                        if (typeof setter === 'function') {
+                            setter(input.value);
+                            updateInputs();
+                        }
+                    };
+
+                    inputs[fieldName] = input;
+                    form.appendChild(input);
+                }
+            }
+
+            parent.appendChild(form)
+            updateInputs();
+        }
+
+
+
+        let car;
+        {
+            let brand = 'BMW',
+                model = 'X5',
+                volume = 2.4;
+            car = {
+                getBrand() {
+                    return brand;
+                },
+                setBrand(newBrand) {
+                    if (newBrand && typeof newBrand === 'string') {
+                        brand = newBrand;
+                    }
+                    return brand;
+                },
+                getModel() {
+                    return model;
+                },
+                setModel(newModel) {
+                    if (newModel && typeof newModel === 'string') {
+                        model = newModel;
+                    }
+                    return model;
+                },
+                getVolume() {
+                    return volume;
+                },
+                setVolume(newVolume) {
+                    newVolume = +newVolume;
+                    if (newVolume && newVolume > 0 && newVolume < 20) {
+                        volume = newVolume;
+                    }
+                    return volume;
+                },
+                getTax() {
+                    return volume * 100;
+                }
+            };
+        }
+
+        getSetForm(document.body, car);
+        getSetForm(document.body, createPersonClosure('Анон', "Анонов"))
+    </script>
+</body>
+</html>
