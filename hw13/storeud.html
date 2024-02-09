@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storeud foop</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        .highlight {
+            background-color: magenta;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div>
+
+        <h2>Product Inventory</h2>
+        <table id="productTable">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Count</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+        <h2>Buy Products</h2>
+        <select id="productSelect">
+            <option value="beer">Beer</option>
+            <option value="snacks">Snacks</option>
+           
+        </select>
+        <input type="number" id="quantityInput" placeholder="Quantity" />
+        <button onclick="buy()">Buy</button>
+    </div>
+    <div>
+        <h2>Current Funds: <span id="fundsDisplay">$1000</span></h2>
+    </div>
+
+
+
+
+    <script>
+
+
+
+        const initialState = {
+            products: {
+                beer: { quantity: 100, cost: 2 },
+                snacks: { quantity: 50, cost: 1.5 },
+
+            },
+            funds: 1000, 
+            cashier: 0, 
+        };
+
+
+        const buyProduct = (product, quantity, funds) => ({
+            type: 'BUY_PRODUCT',
+            payload: { product, quantity, funds },
+        });
+
+
+        const rootReducer = (state = initialState, action) => {
+            switch (action.type) {
+                case 'BUY_PRODUCT':
+                    const { product, quantity, funds } = action.payload;
+                    const productCost = state.products[product].cost;
+                    const totalCost = productCost * quantity;
+
+
+                    if (state.products[product].quantity >= quantity && state.funds >= totalCost) {
+                        return {
+                            ...state,
+                            products: {
+                                ...state.products,
+                                [product]: {
+                                    ...state.products[product],
+                                    quantity: state.products[product].quantity - quantity,
+                                },
+                            },
+                            funds: state.funds - totalCost,
+                            cashier: state.cashier + totalCost,
+                        };
+                    } else {
+
+                        return state;
+                    }
+                default:
+                    return state;
+            }
+        };
+
+
+
+
+
+        function createStore(reducer) {
+
+        this.state = reducer(undefined, {});
+
+
+        this.subscribers = [];
+
+        this.getState = () => this.state;
+
+        this.subscribe = (cb) => {
+            this.subscribers.push(cb);
+            return () => {
+
+                this.subscribers = this.subscribers.filter((subscriber) => subscriber !== cb);
+            };
+        };
+
+        this.dispatch = (action) => {
+            const newState = reducer(this.state, action);
+            if (newState !== this.state) {
+                this.state = newState;
+
+                this.subscribers.forEach((cb) => cb());
+            }
+        };
+    }
+
+
+    const store = new createStore(rootReducer);
+    </script>
+
+
+
+    <script>
+
+
+        const updateProductTable = () => {
+            const productTableBody = document.querySelector('#productTable tbody');
+            productTableBody.innerHTML = '';
+
+
+            Object.entries(store.getState().products).forEach(([productName, productDetails]) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+          <td>${productName}</td>
+          <td>${productDetails.quantity}</td>
+          <td>$${productDetails.cost.toFixed(2)}</td>
+        `;
+                productTableBody.appendChild(row);
+            });
+        };
+
+        const updateFundsDisplay = () => {
+            document.getElementById('fundsDisplay').innerText = `$${store.getState().funds}`;
+        };
+
+
+        const updateDocumentTitle = () => {
+            document.title = `Kiosk - Cashier: $${store.getState().cashier}`;
+        };
+
+        store.subscribe(() => {
+            updateFundsDisplay();
+            updateDocumentTitle();
+            updateProductTable();
+        });
+
+
+        const buy = () => {
+            const product = document.getElementById('productSelect').value;
+            const quantity = parseInt(document.getElementById('quantityInput').value, 10);
+            const funds = store.getState().funds;
+
+
+            store.dispatch(buyProduct(product, quantity, funds));
+        };
+
+
+        updateProductTable();
+    </script>
+
+</body>
+
+</html>

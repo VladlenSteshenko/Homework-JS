@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Form</title>
+<style>
+    /* Add your styles here */
+</style>
+</head>
+<body>
+<div id="login-form">
+    <input type="text" id="username" placeholder="Username">
+    <div id="password-container"></div>
+    <button id="login-button" disabled>Login</button>
+</div>
+
+<script>
+function Password(parent, open) {
+    // Create password input field
+    const passwordInput = document.createElement('input');
+    passwordInput.type = 'password'; // By default, show password as dots
+    parent.appendChild(passwordInput);
+
+    // Create toggle button for showing/hiding password
+    const toggleButton = document.createElement('button');
+    toggleButton.textContent = 'Show Password';
+    parent.appendChild(toggleButton);
+
+    // Set initial open state
+    let isOpen = open;
+
+    // Function to toggle password visibility
+    function togglePasswordVisibility() {
+        if (isOpen) {
+            passwordInput.type = 'text'; // Show password as plain text
+            toggleButton.textContent = 'Hide Password';
+        } else {
+            passwordInput.type = 'password'; // Hide password
+            toggleButton.textContent = 'Show Password';
+        }
+    }
+
+    // Add event listener to toggle button
+    toggleButton.addEventListener('click', () => {
+        isOpen = !isOpen;
+        togglePasswordVisibility();
+        if (this.onOpenChange) {
+            this.onOpenChange(isOpen);
+        }
+    });
+
+    // Method to set password value
+    this.setValue = function(value) {
+        passwordInput.value = value;
+        if (this.onChange) {
+            this.onChange(value);
+        }
+    };
+
+    // Method to get password value
+    this.getValue = function() {
+        return passwordInput.value;
+    };
+
+    // Method to set open state
+    this.setOpen = function(open) {
+        isOpen = open;
+        togglePasswordVisibility();
+        if (this.onOpenChange) {
+            this.onOpenChange(isOpen);
+        }
+    };
+
+    // Method to get open state
+    this.getOpen = function() {
+        return isOpen;
+    };
+
+    // Initialize visibility
+    togglePasswordVisibility();
+}
+
+// Create Password object
+const passwordContainer = document.getElementById('password-container');
+const password = new Password(passwordContainer, true);
+
+// Login button
+const loginButton = document.getElementById('login-button');
+loginButton.addEventListener('click', () => {
+    const usernameInput = document.getElementById('username');
+    const username = usernameInput.value;
+    const passwordValue = password.getValue();
+    alert(`Username: ${username}, Password: ${passwordValue}`);
+});
+
+// Enable login button only if both username and password are not empty
+document.getElementById('username').addEventListener('input', toggleLoginButtonState);
+password.onChange = toggleLoginButtonState;
+
+function toggleLoginButtonState() {
+    const username = document.getElementById('username').value;
+    const passwordValue = password.getValue();
+    loginButton.disabled = !(username && passwordValue);
+}
+</script>
+</body>
+</html>
