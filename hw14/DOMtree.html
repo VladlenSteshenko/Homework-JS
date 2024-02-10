@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOM tree</title>
+</head>
+
+<body>
+    <div id="output"></div>
+
+    <script>
+        const htmlTree = {
+            tagName: 'body',
+            children: [
+                {
+                    tagName: 'div',
+                    children: [
+                        {
+                            tagName: 'span',
+                            children: ['Enter a data please:'],
+                        },
+                        {
+                            tagName: 'br',
+                        },
+                        {
+                            tagName: 'input',
+                            attrs: {
+                                type: 'text',
+                                id: 'name',
+                            },
+                        },
+                        {
+                            tagName: 'input',
+                            attrs: {
+                                type: 'text',
+                                id: 'surname',
+                            },
+                        },
+                    ],
+                },
+                {
+                    tagName: 'div',
+                    children: [
+                        {
+                            tagName: 'button',
+                            attrs: {
+                                id: 'ok',
+                            },
+                            children: ['OK'],
+                        },
+                        {
+                            tagName: 'button',
+                            attrs: {
+                                id: 'cancel',
+                            },
+                            children: ['Cancel'],
+                        },
+                    ],
+                },
+            ],
+        };
+
+        function domTree(parent, node) {
+            if (typeof node === 'string') {
+                parent.appendChild(document.createTextNode(node));
+            } else {
+                const { tagName, children, attrs } = node;
+                const element = document.createElement(tagName);
+
+                if (attrs) {
+                    for (const [key, value] of Object.entries(attrs)) {
+                        element.setAttribute(key, value);
+                    }
+                }
+
+                if (children) {
+                    for (const child of children) {
+                        domTree(element, child);
+                    }
+                }
+
+                parent.appendChild(element);
+            }
+        }
+
+        function processTree(parent, node) {
+            if (Array.isArray(node)) {
+                for (const childNode of node) {
+                    domTree(parent, childNode);
+                }
+            } else {
+                domTree(parent, node);
+            }
+        }
+
+        processTree(document.body, htmlTree.children);
+
+    </script>
+</body>
+
+</html>

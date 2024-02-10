@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML tree</title>
+</head>
+
+<body>
+
+    <div id="output"></div>
+    <script>
+        const htmlTree = {
+            tagName: 'body',
+            children: [
+                {
+                    tagName: 'div',
+                    children: [
+                        {
+                            tagName: 'span',
+                            children: ['Enter a data please:'],
+                        },
+                        {
+                            tagName: 'br',
+                        },
+                        {
+                            tagName: 'input',
+                            attrs: {
+                                type: 'text',
+                                id: 'name',
+                            },
+                        },
+                        {
+                            tagName: 'input',
+                            attrs: {
+                                type: 'text',
+                                id: 'surname',
+                            },
+                        },
+                    ],
+                },
+                {
+                    tagName: 'div',
+                    children: [
+                        {
+                            tagName: 'button',
+                            attrs: {
+                                id: 'ok',
+                            },
+                            children: ['OK'],
+                        },
+                        {
+                            tagName: 'button',
+                            attrs: {
+                                id: 'cancel',
+                            },
+                            children: ['Cancel'],
+                        },
+                    ],
+                },
+            ],
+        };
+
+        function generateHTML(element, tree) {
+            const el = document.createElement(tree.tagName);
+
+            if (tree.children) {
+                tree.children.forEach(child => {
+                    el.appendChild(generateHTML(el, child));
+                });
+            }
+
+            if (tree.attrs) {
+                Object.keys(tree.attrs).forEach(attr => {
+                    el.setAttribute(attr, tree.attrs[attr]);
+                });
+            }
+
+            if (tree.children && tree.children.length === 1 && typeof tree.children[0] === 'string') {
+                el.innerHTML = tree.children[0];
+            }
+
+            element.appendChild(el);
+            return el;
+        }
+
+        const outputElement = document.getElementById('output');
+        generateHTML(outputElement, htmlTree);
+    </script>
+
+</body>
+
+</html>

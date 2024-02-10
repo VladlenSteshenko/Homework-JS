@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>getElementById throw</title>
+</head>
+
+<body>
+    <div id="container">
+        <div id="content">
+            <h1 id="title">Привіт, світ!</h1>
+            <p id="paragraph">Це тестовий абзац.</p>
+            <ul id="list">
+                <li id="item1">Елемент 1</li>
+                <li id="item2">Елемент 2</li>
+                <li id="item3">Елемент 3</li>
+            </ul>
+            <button id="button">Натисніть мене</button>
+        </div>
+    </div>
+
+    <script>
+        function getElementById(idToFind) {
+            function walker(parent) {
+                for (const child of parent.children) {
+                    if (child.id === idToFind) {
+                        throw child; // Викидаємо виняток із знайденим елементом
+                    }
+                    walker(child);
+                }
+            }
+
+            try {
+                walker(document.body); // Починаємо обхід з document.body
+            } catch (element) {
+                return element; // Повертаємо знайдений елемент, якщо було викинуто виняток
+            }
+            // Якщо елемент не знайдено, повертаємо null
+            return null;
+        }
+
+        // Запит id у користувача через prompt
+        const idToFind = prompt('Введіть id елемента для пошуку:');
+        if (idToFind) {
+            const element = getElementById(idToFind);
+            if (element) {
+                alert('Знайдений елемент: ' + element.tagName);
+            } else {
+                alert('Елемент з вказаним id не знайдено');
+            }
+        } else {
+            alert('Ви не ввели id елемента.');
+        }
+    </script>
+    </script>
+</body>
+
+</html>
