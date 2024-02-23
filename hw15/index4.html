@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promisify: confirm</title>
+</head>
+
+<body>
+    <button id="confirmButton">Натисніть, щоб запустити confirm</button>
+
+    <script>
+        function confirmPromise(text) {
+            return new Promise((resolve, reject) => {
+                const result = confirm(text);
+                if (result) {
+                    resolve();
+                } else {
+                    reject();
+                }
+            });
+        }
+
+        document.getElementById('confirmButton').addEventListener('click', () => {
+            confirmPromise('Проміси це складно?')
+                .then(() => alert('Не так вже й складно'))
+                .catch(() => alert('Respect за посидючість і уважність'));
+        });
+    </script>
+</body>
+
+</html>

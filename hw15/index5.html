@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promisify: prompt</title>
+</head>
+
+<body>
+    <button id="promptButton">Запитати про ім'я</button>
+
+    <script>
+        function promptPromise(text) {
+            return new Promise((resolve, reject) => {
+                const userInput = prompt(text);
+                if (userInput === null) {
+                    reject();
+                } else {
+                    resolve(userInput);
+                }
+            });
+        }
+
+        document.getElementById('promptButton').addEventListener('click', () => {
+            promptPromise("Як тебе звуть?")
+                .then(name => alert(`Тебе звуть ${name}`))
+                .catch(() => alert('Ну навіщо морозитися, нормально ж спілкувалися'));
+        });
+    </script>
+</body>
+
+</html>

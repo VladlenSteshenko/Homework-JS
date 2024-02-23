@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>race</title>
+</head>
+
+<body>
+
+    <script>
+        async function fetchDataWithDelay(url, delay) {
+            const fetchData = async () => {
+                const response = await fetch(url);
+                return response.json();
+            };
+
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Timeout')), delay)
+            );
+
+            try {
+                const result = await Promise.race([fetchData(), timeoutPromise]);
+                return result;
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        const apiUrl = 'https://swapi.dev/api/people/1/';
+        const delay1 = 500;
+
+
+        Promise.race([
+            fetchDataWithDelay(apiUrl, delay1)
+        ])
+            .then((result) => {
+                console.log('fetchData first', result);
+            })
+            .catch((error) => {
+                console.error('delay1 first', error.message);
+            });
+    </script>
+</body>
+
+</html>

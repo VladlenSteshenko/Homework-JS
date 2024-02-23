@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fetch basic</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="table-container"></div>
+    <script>
+        function displayJSONAsTable(DOMElement, jsonData) {
+            // Очистка вмісту DOM-елемента
+            DOMElement.innerHTML = '';
+
+            // Створення таблиці
+            const table = document.createElement('table');
+            const tbody = document.createElement('tbody');
+
+            // Додавання даних у тіло таблиці
+            for (const key in jsonData) {
+                const row = document.createElement('tr');
+
+                // Створення комірки для назви ключа
+                const keyCell = document.createElement('td');
+                keyCell.textContent = key;
+                row.appendChild(keyCell);
+
+                // Створення комірки для значення
+                const valueCell = document.createElement('td');
+                valueCell.textContent = jsonData[key];
+                row.appendChild(valueCell);
+
+                tbody.appendChild(row);
+            }
+            table.appendChild(tbody);
+
+            // Додавання таблиці до DOM-елемента
+            DOMElement.appendChild(table);
+        }
+        
+        const DOMElement = document.getElementById('table-container'); 
+        fetch('https://swapi.dev/api/people/1/')
+            .then(res => res.json())
+            .then(luke => displayJSONAsTable(DOMElement, luke));
+    </script>
+
+
+</body>
+
+</html>

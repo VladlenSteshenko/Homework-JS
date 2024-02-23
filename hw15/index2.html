@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fetch improved</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="table-container"></div>
+    <script>
+        function displayJSONAsTable(DOMElement, jsonData, isNested = false) {
+            // Очистка вмісту DOM-елемента
+            DOMElement.innerHTML = '';
+
+            // Створення таблиці
+            const table = document.createElement('table');
+            const tbody = document.createElement('tbody');
+
+            // Додавання даних у тіло таблиці
+            for (const key in jsonData) {
+                const row = document.createElement('tr');
+
+                // Створення комірки для назви ключа
+                const keyCell = document.createElement('td');
+                keyCell.textContent = key;
+                row.appendChild(keyCell);
+
+                // Створення комірки для значення
+                const valueCell = document.createElement('td');
+                const value = jsonData[key];
+
+                // Перевірка, чи є значення рядком або масивом
+                if (typeof value === 'string' || Array.isArray(value)) {
+                    if (Array.isArray(value)) {
+                        // Якщо значення - масив
+                        const button = document.createElement('button');
+                        button.textContent = isNested ? 'Toggle Data' : 'Show Data';
+                        button.addEventListener('click', () => {
+                            const hiddenClass = valueCell.classList.contains('hidden');
+                            if (hiddenClass) {
+                                valueCell.classList.remove('hidden');
+                            } else {
+                                valueCell.classList.add('hidden');
+                            }
+                        });
+                        valueCell.appendChild(button);
+
+                        // Виклик рекурсивної функції для відображення вкладених даних
+                        displayJSONAsTable(valueCell, value, true);
+                    } else if (value.includes('https://swapi.dev/api/')) {
+                        // Створення кнопки для відображення даних
+                        const button = document.createElement('button');
+                        button.textContent = 'Show Data';
+                        button.addEventListener('click', () => {
+                            fetch(value)
+                                .then(res => res.json())
+                                .then(data => displayJSONAsTable(valueCell, data, true));
+                        });
+                        valueCell.appendChild(button);
+                    } else {
+                        // Якщо значення не містить посилання, просто відображаємо його
+                        valueCell.textContent = JSON.stringify(value);
+                    }
+                } else {
+                    // Рекурсивно викликаємо функцію для відображення вкладених даних
+                    displayJSONAsTable(valueCell, value, true);
+                }
+
+                row.appendChild(valueCell);
+                tbody.appendChild(row);
+            }
+            table.appendChild(tbody);
+
+            // Додавання таблиці до DOM-елемента
+            DOMElement.appendChild(table);
+        }
+
+        const DOMElement = document.getElementById('table-container'); 
+        fetch('https://swapi.dev/api/people/1/')
+            .then(res => res.json())
+            .then(data => displayJSONAsTable(DOMElement, data));
+    </script>
+</body>
+
+</html>

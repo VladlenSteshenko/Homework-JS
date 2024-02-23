@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promisify: LoginForm</title>
+</head>
+
+<body>
+    <div id="loginFormContainer"></div>
+
+    <script>
+        function Password(parent, open) {
+            // Create password input field
+            const passwordInput = document.createElement('input');
+            passwordInput.type = 'password'; // By default, show password as dots
+            parent.appendChild(passwordInput);
+
+            // Create toggle button for showing/hiding password
+            const toggleButton = document.createElement('button');
+            toggleButton.textContent = 'Show Password';
+            parent.appendChild(toggleButton);
+
+            // Set initial open state
+            let isOpen = open;
+
+            // Function to toggle password visibility
+            function togglePasswordVisibility() {
+                if (isOpen) {
+                    passwordInput.type = 'text'; // Show password as plain text
+                    toggleButton.textContent = 'Hide Password';
+                } else {
+                    passwordInput.type = 'password'; // Hide password
+                    toggleButton.textContent = 'Show Password';
+                }
+            }
+
+            // Add event listener to toggle button
+            toggleButton.addEventListener('click', () => {
+                isOpen = !isOpen;
+                togglePasswordVisibility();
+                if (this.onOpenChange) {
+                    this.onOpenChange(isOpen);
+                }
+            });
+
+            // Method to set password value
+            this.setValue = function (value) {
+                passwordInput.value = value;
+                if (this.onChange) {
+                    this.onChange(value);
+                }
+            };
+
+            // Method to get password value
+            this.getValue = function () {
+                return passwordInput.value;
+            };
+
+            // Method to set open state
+            this.setOpen = function (open) {
+                isOpen = open;
+                togglePasswordVisibility();
+                if (this.onOpenChange) {
+                    this.onOpenChange(isOpen);
+                }
+            };
+
+            // Method to get open state
+            this.getOpen = function () {
+                return isOpen;
+            };
+
+            // Initialize visibility
+            togglePasswordVisibility();
+        }
+
+        function LoginForm(parent) {
+            this.parent = parent;
+
+            // Create username input field
+            this.usernameInput = document.createElement('input');
+            this.usernameInput.type = 'text';
+            this.usernameInput.placeholder = 'Username';
+            this.parent.appendChild(this.usernameInput);
+
+            // Create password input field using Password constructor
+            this.passwordContainer = document.createElement('div');
+            this.parent.appendChild(this.passwordContainer);
+            this.password = new Password(this.passwordContainer, true);
+
+            // Create login button
+            this.loginButton = document.createElement('button');
+            this.loginButton.textContent = 'Login';
+            this.loginButton.disabled = true;
+            this.parent.appendChild(this.loginButton);
+
+            // Method to enable/disable login button based on input fields
+            this.toggleLoginButtonState = function () {
+                const username = this.usernameInput.value;
+                const passwordValue = this.password.getValue();
+                this.loginButton.disabled = !(username && passwordValue);
+            };
+
+            // Add event listeners to input fields
+            this.usernameInput.addEventListener('input', () => {
+                this.toggleLoginButtonState();
+            });
+
+            this.password.onChange = () => {
+                this.toggleLoginButtonState();
+            };
+
+            // Login button click event
+            this.loginButton.addEventListener('click', () => {
+                const username = this.usernameInput.value;
+                const passwordValue = this.password.getValue();
+                alert(`Username: ${username}, Password: ${passwordValue}`);
+            });
+
+            // Getter for username
+            this.getUsername = function () {
+                return this.usernameInput.value;
+            };
+
+            // Setter for username
+            this.setUsername = function (username) {
+                this.usernameInput.value = username;
+                this.toggleLoginButtonState();
+            };
+
+            // Getter for password value
+            this.getPasswordValue = function () {
+                return this.password.getValue();
+            };
+
+            // Setter for password value
+            this.setPasswordValue = function (password) {
+                this.password.setValue(password);
+                this.toggleLoginButtonState();
+            };
+        }
+
+        function loginPromise(parent) {
+            return new Promise((resolve, reject) => {
+                const form = new LoginForm(parent);
+
+                form.loginButton.addEventListener('click', () => {
+                    const login = form.getUsername();
+                    const password = form.getPasswordValue();
+
+                    if (login && password) {
+                        resolve({ login, password });
+                    } else {
+                        reject(new Error('Не введено логін або пароль.'));
+                    }
+                });
+            });
+        }
+
+        loginPromise(document.getElementById('loginFormContainer'))
+            .then(({ login, password }) => {
+                console.log(`Ви ввели логін: ${login} та пароль: ${password}`);
+            })
+            .catch(error => {
+                console.error(error.message);
+            });
+    </script>
+</body>
+
+</html>
