@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+</head>
+
+<body>
+
+    <label for="nick">Nick:</label>
+    <input type="text" id="nick" placeholder="Enter your nickname">
+
+    <label for="message">Message:</label>
+    <input type="text" id="message" placeholder="Type your message">
+
+    <button onclick="sendAndCheck()">Send and Check</button>
+
+    <div id="nextMessageId">Next Message ID: </div>
+
+    <div id="messagesContainer"></div>
+
+    <script>
+        async function jsonPost(url, data) {
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error('status is not 200');
+                }
+
+                return await response.json();
+            } catch (error) {
+                throw new Error('jsonPost failed');
+            }
+        }
+
+
+        async function sendMessage(nick, message) {
+            try {
+                const response = await jsonPost("http://students.a-level.com.ua:10012", { func: 'addMessage', nick, message });
+                document.getElementById('nextMessageId').innerText = 'Next Message ID: ' + response.nextMessageId;
+            } catch (error) {
+                console.error('Error:', error.message);
+            }
+        }
+
+        async function getMessages(messageId) {
+            try {
+                const response = await jsonPost("http://students.a-level.com.ua:10012", { func: "getMessages", messageId });
+                displayMessages(response.data);
+                console.log("getMessages: " + response.nextMessageId);
+                return response.nextMessageId;
+            } catch (error) {
+                console.error('Error:', error.message);
+                throw error; // Rethrow the error to propagate it to the caller
+            }
+        }
+
+        async function sendAndCheck() {
+            const nick = document.getElementById('nick').value;
+            const message = document.getElementById('message').value;
+
+            // Send a message and get the nextMessageId
+            try {
+                const response = await jsonPost("http://students.a-level.com.ua:10012", { func: 'addMessage', nick, message });
+                document.getElementById('nextMessageId').innerText = 'Next Message ID: ' + response.nextMessageId;
+
+                // Get messages and update messageId for the next request
+                const nextMessageId = await getMessages(12959);
+
+
+            } catch (error) {
+                console.error('Error:', error.message);
+            }
+        }
+
+        async function checkLoop(messageId) {
+            // Infinite loop with a delay of 5 seconds
+            while (true) {
+                try {
+                    await getMessages(messageId);
+                    await new Promise(resolve => setTimeout(resolve, 5000));
+                } catch (error) {
+                    // Handle error if getMessages fails
+                    console.error('Error in checkLoop:', error.message);
+                    await new Promise(resolve => setTimeout(resolve, 5000));
+                }
+            }
+        }
+
+
+
+        function displayMessages(messages) {
+            var messagesContainer = document.getElementById('messagesContainer');
+
+            // Clear previous messages
+            messagesContainer.innerHTML = '';
+
+            // Create a new div for each message and append it to the container
+            messages.forEach((message) => {
+                var messageDiv = document.createElement('div');
+                messageDiv.innerHTML = '<strong>' + message.nick + '</strong>: ' + message.message + ' - ' + new Date(message.timestamp);
+                messagesContainer.appendChild(messageDiv);
+            });
+        }
+        checkLoop(12959)
+
+    </script>
+
+</body>
+
+</html>

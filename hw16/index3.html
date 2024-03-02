@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Promise Example</title>
+</head>
+
+<body>
+
+    <button id="knopka">Click me</button>
+
+    <script>
+        function domEventPromise(element, eventName) {
+            function executor(resolve) {
+                function eventHandler(event) {
+                    // Remove the event listener to prevent memory leaks
+                    element.removeEventListener(eventName, eventHandler);
+
+                    // Resolve the promise with the event object
+                    resolve(event);
+                }
+
+                // Add event listener to the DOM element
+                element.addEventListener(eventName, eventHandler);
+            }
+
+            return new Promise(executor);
+        }
+        const knopka = document.getElementById('knopka');
+        domEventPromise(knopka, 'click').then(e => console.log('event click happens', e));
+    </script>
+
+</body>
+
+</html>
+
+</html>

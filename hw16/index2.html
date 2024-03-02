@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWAPI Links</title>
+</head>
+<body>
+    <script>
+        async function fetchData(url) {
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                // Helper function to replace links in the main object
+                const replaceLinksInObject = async (obj) => {
+                    for (const key in obj) {
+                        if (key === 'url') {
+                            continue; // Skip the 'url' property
+                        }
+                        if (typeof obj[key] === 'string' && obj[key].startsWith('https://swapi.dev/api/')) {
+                            const linkResponse = await fetch(obj[key]);
+                            const linkData = await linkResponse.json();
+                            obj[key] = linkData;
+                        } else if (typeof obj[key] === 'object') {
+                            await replaceLinksInObject(obj[key]); // Recursively check nested objects
+                        }
+                    }
+                };
+
+                // Replace links in the main object
+                await replaceLinksInObject(data);
+
+                console.log(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        // Call the function to fetch and log the data
+        fetchData('https://swapi.dev/api/people/20/');
+    </script>
+</body>
+</html>
